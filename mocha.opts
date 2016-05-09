@@ -1,0 +1,6 @@
+--ui tdd
+--recursive
+--reporter spec
+--check-leaks
+--harmony
+./test
