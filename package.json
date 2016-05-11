@@ -7,7 +7,7 @@
     "start": "node --harmony_rest_parameters ./bin/run.js ",
     "tests": "./node_modules/mocha/bin/mocha --opts ./mocha.opts",
     "lint": "node ./node_modules/eslint/bin/eslint.js ./app/**/*.js ./test/**/*.js",
-    "postinstall": "",
+    "postinstall": "true",
     "all": "npm run lint && npm run tests"
   },
   "repository": {
