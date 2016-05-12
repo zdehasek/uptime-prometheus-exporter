@@ -25,6 +25,8 @@ class PrometheusExporter extends events.EventEmitter {
     }
 
     init () {
+
+        log.i(`Initializing with: sumKey: ${this.sumKey}, lbmKey: ${this.lbmKey}`);
         co(this.aggregateData.bind(this)).catch((err) => {
             log.e(`Err:${err}`);
         });
@@ -34,6 +36,7 @@ class PrometheusExporter extends events.EventEmitter {
                 log.e(`Err:${err}`);
             });
         }, this.sleepInterval);
+        log.i('Initialized');
     }
 
     /**
@@ -48,17 +51,24 @@ class PrometheusExporter extends events.EventEmitter {
         while (lbm < this._getThreshold()) {
             const lockKey = `aggregator_lock_${lbm}`;
             if (yield this.redis.set(lockKey, 1, 'NX', 'EX', 100)) {
+                log.i('Started aggregate procedure');
+
                 const multi = this.redis.multi();
                 if (yield this.redis.exists(`${this.profilePrefix}profile:${lbm}`)) {
                     multi.zunionstore(this.sumKey, 2,
                         this.sumKey, `${this.profilePrefix}profile:${lbm}`);
+                } else {
+                    log.i(`${this.profilePrefix}profile:${lbm} does not exist`);
                 }
 
                 multi.set(this.lbmKey, lbm);
 
                 yield multi.exec();
                 yield this.redis.del(lockKey);
+
+                log.i('Ended aggregate procedure');
             } else {
+                log.i(`Failed to lock key ${lockKey}, threshold: ${this._getThreshold()}`);
                 break;
             }
             lbm++;
@@ -83,6 +93,8 @@ class PrometheusExporter extends events.EventEmitter {
             missingMinuteData = yield this.redis.zrange(
                 `${this.profilePrefix}profile:${threshold - 1}`, 0, -1, 'WITHSCORES'
             );
+
+            log.i(`Adding missingMinuteData ${this.profilePrefix}profile:${threshold - 1}`);
         }
 
         const minuteData = yield this.redis.zrange(
@@ -98,6 +110,7 @@ class PrometheusExporter extends events.EventEmitter {
         // add not summarized minute
         if (threshold > data[1][1]) {
             addMinute = true;
+            log.i(`Adding last minute ${this.profilePrefix}profile:${threshold - 1}, current minute: ${this._getMinute()}`);
         }
 
         const minuteKeys = new Map();
