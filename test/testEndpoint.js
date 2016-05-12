@@ -84,33 +84,28 @@ describe('test endpoint', () => {
                 co(exporter.handleRequest.bind(exporter))
             ))
             .then((res) => {
+                console.log(res);
                 // test response
                 const expected = {
-                    'test_route1_bucket{le="1"}': 2,
-                    'test_route2_bucket{le="1"}': 3,
-                    'requests_bucket{le="1"}': 5,
-                    requests_sum: 93.7,
-                    requests_count: 21,
-                    test_route3_count: 2,
-                    test_route1_count: 16,
-                    test_route3_sum: 23.5,
-                    test_route1_sum: 64.18,
-                    test_route2_count: 3,
-                    test_route2_sum: 6.02
+                    'profiler_bucket{le="1",route="test_route1"}': '2',
+                    'profiler_bucket{le="1",route="test_route2"}': '3',
+                    'requests_bucket{le="1"}': '5',
+                    requests_sum: '93.7',
+                    requests_count: '21',
+                    'profiler_count{route="test_route3"}': '2',
+                    'profiler_sum{route="test_route3"}': '23.5',
+                    'profiler_count{route="test_route1"}': '16',
+                    'profiler_sum{route="test_route1"}': '64.18',
+                    'profiler_count{route="test_route2"}': '3',
+                    'profiler_sum{route="test_route2"}': '6.02'
+
                 };
 
-                for (const p in res) {
-                    if (!res.hasOwnProperty(p)) continue;
+                console.log(expected);
+                console.log(expected['profiler_sum{route="test_route2"}']);
 
-                    if (!expected.hasOwnProperty(p)) {
-                        assert.ok(false, `Row ${p} is not expected`);
-                    }
+                assert.deepEqual(expected, res);
 
-                    if (parseFloat(res[p]) !== parseFloat(expected[p])) {
-                        assert.ok(false,
-                            `${p} value mismatch, expected: ${expected[p]}, got: ${res[p]}`);
-                    }
-                }
 
                 for (const p in expected) {
                     if (expected.hasOwnProperty(p) && ! res.hasOwnProperty(p)) {
