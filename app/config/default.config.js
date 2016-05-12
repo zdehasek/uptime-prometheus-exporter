@@ -2,7 +2,7 @@
 
 const cfg = {
 
-    port: 3333,
+    port: 8080,
     debugEnabled: true,
     production: false,
     redis: 6379,
