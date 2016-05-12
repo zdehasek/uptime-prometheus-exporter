@@ -26,7 +26,7 @@ router.get('/', function *() {
     this.body = 'Hello World!';
 });
 
-router.get('/status', function *() {
+router.get('/metrics', function *() {
     let data;
     try {
         data = yield prometheusExporter.handleRequest();
