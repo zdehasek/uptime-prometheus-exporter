@@ -137,6 +137,7 @@ class PrometheusExporter extends events.EventEmitter {
 
                         const route = mArray[i].substr(0, countIndex);
                         response[`profiler_bucket{le="1",route="${route}"}`] = mArray[i + 1];
+                        response[`profiler_1m_count{route="${route}"}`] = mArray[i + 1];
                     }
                 }
                 const sumDataidx = sumData.indexOf(mArray[i]);
@@ -163,6 +164,20 @@ class PrometheusExporter extends events.EventEmitter {
             let val = parseFloat(sumData[i + 1]);
             if (minuteSet) {
                 val += parseFloat(minuteVal);
+                const sumIdx = sumData[i].indexOf('_sum');
+                if (sumIdx > -1) {
+                    response[`profiler_1m_sum{route="${sumData[i].substr(0, sumIdx)}"}`] = parseFloat(minuteVal);
+                }
+            } else {
+                const countIdx = sumData[i].indexOf('_count');
+                const sumIdx = sumData[i].indexOf('_sum');
+                if (countIdx > -1) {
+                    response[`profiler_bucket{le="1",route="${sumData[i].substr(0, countIdx)}"}`] = 0;
+                    response[`profiler_1m_count{route="${sumData[i].substr(0, countIdx)}"}`] = 0;
+
+                } else if (sumIdx > -1) {
+                    response[`profiler_1m_sum{route="${sumData[i].substr(0, sumIdx)}"}`] = 0;
+                }
             }
 
             let name = sumData[i];
