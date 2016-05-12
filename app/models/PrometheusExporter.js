@@ -3,7 +3,7 @@
  * Created by Jan Řasa on 5/5/2016
  */
 
-const log = require('./log').module('prometheus-exporter-test');
+const log = require('./log').module('prometheus-exporter');
 const events = require('events');
 const co = require('co');
 
@@ -26,7 +26,7 @@ class PrometheusExporter extends events.EventEmitter {
 
     init () {
 
-        log.i(`Initializing with: sumKey: ${this.sumKey}, lbmKey: ${this.lbmKey}`);
+        // log.i(`Initializing with: sumKey: ${this.sumKey}, lbmKey: ${this.lbmKey}`);
         co(this.aggregateData.bind(this)).catch((err) => {
             log.e(`Err:${err}`);
         });
@@ -36,7 +36,7 @@ class PrometheusExporter extends events.EventEmitter {
                 log.e(`Err:${err}`);
             });
         }, this.sleepInterval);
-        log.i('Initialized');
+        // log.i('Initialized');
     }
 
     /**
@@ -51,14 +51,14 @@ class PrometheusExporter extends events.EventEmitter {
         while (lbm < this._getThreshold()) {
             const lockKey = `aggregator_lock_${lbm}`;
             if (yield this.redis.set(lockKey, 1, 'NX', 'EX', 100)) {
-                log.i('Started aggregate procedure');
+                // log.i('Started aggregate procedure');
 
                 const multi = this.redis.multi();
                 if (yield this.redis.exists(`${this.profilePrefix}profile:${lbm}`)) {
                     multi.zunionstore(this.sumKey, 2,
                         this.sumKey, `${this.profilePrefix}profile:${lbm}`);
                 } else {
-                    log.i(`${this.profilePrefix}profile:${lbm} does not exist`);
+                    // log.i(`${this.profilePrefix}profile:${lbm} does not exist`);
                 }
 
                 multi.set(this.lbmKey, lbm);
@@ -66,9 +66,9 @@ class PrometheusExporter extends events.EventEmitter {
                 yield multi.exec();
                 yield this.redis.del(lockKey);
 
-                log.i('Ended aggregate procedure');
+                // log.i('Ended aggregate procedure');
             } else {
-                log.i(`Failed to lock key ${lockKey}, threshold: ${this._getThreshold()}`);
+                // log.i(`Failed to lock key ${lockKey}, threshold: ${this._getThreshold()}`);
                 break;
             }
             lbm++;
@@ -94,7 +94,7 @@ class PrometheusExporter extends events.EventEmitter {
                 `${this.profilePrefix}profile:${threshold - 1}`, 0, -1, 'WITHSCORES'
             );
 
-            log.i(`Adding missingMinuteData ${this.profilePrefix}profile:${threshold - 1}`);
+            // log.i(`Adding missingMinuteData ${this.profilePrefix}profile:${threshold - 1}`);
         }
 
         const minuteData = yield this.redis.zrange(
@@ -110,7 +110,7 @@ class PrometheusExporter extends events.EventEmitter {
         // add not summarized minute
         if (threshold > data[1][1]) {
             addMinute = true;
-            log.i(`Adding last minute ${this.profilePrefix}profile:${threshold - 1}, current minute: ${this._getMinute()}`);
+            // log.i(`Adding last minute ${this.profilePrefix}profile:${threshold - 1}, current minute: ${this._getMinute()}`);
         }
 
         const minuteKeys = new Map();
@@ -131,9 +131,12 @@ class PrometheusExporter extends events.EventEmitter {
                         requestsSum += parseFloat(mArray[i + 1]);
                     }
                 } else {
-                    if (mArray[i].indexOf('_count') > -1 && mArray === minuteData) {
+                    const countIndex = mArray[i].indexOf('_count');
+                    if (countIndex > -1 && mArray === minuteData) {
                         // minute bucket info
-                        response[mArray[i].replace('_count', '_bucket{le="1"}')] = mArray[i + 1];
+
+                        const route = mArray[i].substr(0, countIndex);
+                        response[`profiler_bucket{le="1",route="${route}"}`] = mArray[i + 1];
                     }
                 }
                 const sumDataidx = sumData.indexOf(mArray[i]);
@@ -161,13 +164,34 @@ class PrometheusExporter extends events.EventEmitter {
             if (minuteSet) {
                 val += parseFloat(minuteVal);
             }
-            response[sumData[i]] = val;
+
+            let name = sumData[i];
+            let routeNameEndIndex = name.indexOf('_count');
+            if (routeNameEndIndex > -1) {
+                // count
+                name = `profiler_count{route="${name.substr(0, routeNameEndIndex)}"}`;
+            } else {
+                // sum
+                routeNameEndIndex = name.indexOf('_sum');
+                name = `profiler_sum{route="${name.substr(0, routeNameEndIndex)}"}`;
+            }
+            response[name] = val;
         }
 
 
         // (1) set new records from the last minute
         minuteKeys.forEach((val, key) => {
-            response[key] = val;
+            let name = key;
+            let routeNameEndIndex = name.indexOf('_count');
+            if (routeNameEndIndex > -1) {
+                // count
+                name = `profiler_count{route="${name.substr(0, routeNameEndIndex)}"}`;
+            } else {
+                // sum
+                routeNameEndIndex = name.indexOf('_sum');
+                name = `profiler_sum{route="${name.substr(0, routeNameEndIndex)}"}`;
+            }
+            response[name] = val;
         });
 
         return response;
