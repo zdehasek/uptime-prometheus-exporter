@@ -14,8 +14,8 @@ module.exports = {
                 collection: 'logs',
                 capped: true,
                 cappedSize: 1000000000,
-                username: 'storyous',
-                password: 'storyous'
+                //username: 'storyous',
+                //password: 'storyous'
             }
         ]
     }

@@ -4,7 +4,7 @@
   "description": "Storyous Prometheus exporter of aggregated data from profilers in redis",
   "main": "bin/run.js",
   "scripts": {
-    "start": "node --harmony_rest_parameters ./bin/run.js ",
+    "start": "node ./bin/run.js ",
     "tests": "./node_modules/mocha/bin/mocha --opts ./mocha.opts",
     "lint": "node ./node_modules/eslint/bin/eslint.js ./app/**/*.js ./test/**/*.js",
     "postinstall": "true",
