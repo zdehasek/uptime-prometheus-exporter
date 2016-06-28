@@ -6,6 +6,7 @@
 const log = require('./log').module('prometheus-exporter');
 const events = require('events');
 const co = require('co');
+const request = require('request');
 
 class PrometheusExporter extends events.EventEmitter {
     constructor (redis, options) {
@@ -23,7 +24,6 @@ class PrometheusExporter extends events.EventEmitter {
             }
         }
     }
-
     init () {
 
         // log.i(`Initializing with: sumKey: ${this.sumKey}, lbmKey: ${this.lbmKey}`);

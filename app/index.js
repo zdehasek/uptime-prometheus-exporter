@@ -1,19 +1,22 @@
 'use strict';
 
 const log = require('./models/log').module('prometheusExporter-main');
-const Redis = require('ioredis');
+//const Redis = require('ioredis');
 const config = require('./config');
 const PrometheusExporter = require('./models/PrometheusExporter');
 const WebServer = require('./models/WebServer');
 
 
-const client = new Redis(config.redis);
-
+//const client = new Redis(config.redis);
+/*
 client.on('error', (err) => {
     log.e(`Error ${err}`);
 });
+*/
 
-const exporter = new PrometheusExporter(client, {
+//const exporter = new PrometheusExporter(client, {
+const exporter = new PrometheusExporter({
+
     sleepInterval: 10 * 1000,
     sumKey: 'profiler:aggregator_sum',
     lbmKey: 'aggregator_lastBucketMinute',
