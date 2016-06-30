@@ -31,17 +31,10 @@
   },
   "dependencies": {
     "co": "^4.6.0",
-    "gzip": "^0.1.0",
-    "gzippo": "^0.2.0",
     "koa": "^1.2.0",
     "koa-hbs": "^0.8.0",
     "koa-router": "^5.4.0",
-    "moment": "^2.10.6",
-    "node-gyp": "^2.0.2",
-    "node-schedule": "^0.2.9",
     "node.extend": "^1.1.5",
-    "request": "^2.72.0",
-    "winston": "^2.2.0",
-    "winston-mongodb": "^1.4.0"
-  }
+    "request": "^2.72.0"
+    }
 }
