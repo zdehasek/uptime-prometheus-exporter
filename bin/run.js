@@ -5,25 +5,28 @@ const request = require('request');
 const config = require('../app/config');
 const protocols = [ "http://","https://" ];
 
-for(let s of config.URLs) {
-  for (let p of protocols ) {
-    let URL = p + s.host
-    request( URL, function (error, response) {
-      if (!error && response.statusCode == 200) {
-        console.log(URL + " OK");
-      } else {
-        console.log(URL + " ERROR");
-      }
-    })
+const koa = require('koa');
+const app = koa();
+
+app.use(function *(){
+  const resultPromises = []
+  for(let s of config.URLs) {
+    for (let p of protocols ) {
+      let promise = new Promise((resolve, reject)=> {
+        let URL = p + s.host
+        request( URL, function (error, response) {
+          if (!error && response.statusCode == 200) {
+            resolve("urlcheck={url=\"" + URL + "\"} 1");
+          } else {
+            resolve("urlcheck={url=\"" + URL + "\"} 0");
+          }
+        });
+      });
+        resultPromises.push(promise);
+    }
   }
-}
-/*
-class checkURLs extends request{
-  constructor() {
+  const result = yield resultPromises;
+  this.body = result.join("\n")
+});
 
-
-  }
-}
-
-const myCheck = new checkURLs();
-*/
+app.listen(8080);
