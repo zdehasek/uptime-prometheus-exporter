@@ -1,6 +1,6 @@
 'use strict';
 
-//export URL="pay.storyous.cz,login.storyous.com,storyous.com,pro.storyous.com,storyous.pl,admin.storyous.pl"
+//export URL="google.com,example.com,etc..."
 
 let URLsConfig = process.env.URL;
 URLsConfig = URLsConfig.split(',');
