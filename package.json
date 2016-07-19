@@ -34,7 +34,6 @@
     "koa": "^1.2.0",
     "koa-hbs": "^0.8.0",
     "koa-router": "^5.4.0",
-    "node.extend": "^1.1.5",
-    "request": "^2.72.0"
-    }
+    "node.extend": "^1.1.5"
+      }
 }
