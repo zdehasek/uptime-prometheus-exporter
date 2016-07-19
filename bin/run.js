@@ -16,9 +16,9 @@ app.use(function *(){
         let URL = p + s.host
         request( URL, function (error, response) {
           if (!error && response.statusCode == 200) {
-            resolve("urlcheck={url=\"" + URL + "\"} 1");
+            resolve("urlcheck{url=\"" + URL + "\"} 1");
           } else {
-            resolve("urlcheck={url=\"" + URL + "\"} 0");
+            resolve("urlcheck{url=\"" + URL + "\"} 0");
           }
         });
       });

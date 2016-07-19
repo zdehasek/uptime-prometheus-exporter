@@ -1,5 +1,3 @@
-#docker run --name uptime-prometheus-exporter --log-driver=journald -p 127.0.0.1:8080:8080 -e URL='' -d 7efd458c7f88
-
 FROM centos:centos7
 
 # This image provides a Node.JS environment you can use to run your Node.JS
