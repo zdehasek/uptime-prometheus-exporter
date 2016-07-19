@@ -26,7 +26,7 @@ app.use(function *(){
     }
   }
   const result = yield resultPromises;
-  this.body = result.join("\n")
+  this.body = result.join("\n")+"\n"
 });
 
 app.listen(8080);
