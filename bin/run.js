@@ -27,7 +27,8 @@ app.use(function *(){
           agent: false
     }, function (response) {
           // TODO: check redirected satusCode as well.
-          if (response.statusCode == 200 || response.statusCode == 302 || response.statusCode == 301 ) {
+
+          if ([200,301,302].indexOf(response.statusCode) >= 0 ) {
             resolve("urlcheck{url=\"" + URL + "\"} 1");
           } else {
             //console.log(response.statusCode);
