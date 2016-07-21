@@ -18,7 +18,7 @@ app.use(function *(){
       let promise = new Promise((resolve, reject)=> {
         let URL = protocol.prefix + address.host;
         const parsedURL = url.parse(URL);
-        protocol.request.get({
+        const request = protocol.request.get({
           host: parsedURL.host,
           method: 'GET',
           path: parsedURL.path,
@@ -35,6 +35,11 @@ app.use(function *(){
             resolve("urlcheck{url=\"" + URL + "\"} 0");
           }
         });
+        request.on("error",function (error) {
+          console.log("hit");
+          console.log(error.message);
+          resolve("urlcheck{url=\"" + URL + "\"} 0");
+        })
       });
         resultPromises.push(promise);
     }
