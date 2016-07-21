@@ -1,25 +1,25 @@
 {
-  "name": "pay-prometheus-exporter",
+  "name": "uptime-prometheus-exporter",
   "version": "1.0.0",
   "description": "Storyous Prometheus exporter of aggregated data from profilers in redis",
   "main": "bin/run.js",
   "scripts": {
-    "start": "node --harmony_rest_parameters ./bin/run.js ",
-    "tests": "./node_modules/mocha/bin/mocha --opts ./mocha.opts",
+    "start": "node ./bin/run.js ",
+    "test": "./node_modules/mocha/bin/mocha --opts ./mocha.opts",
     "lint": "node ./node_modules/eslint/bin/eslint.js ./app/**/*.js ./test/**/*.js",
     "postinstall": "true",
-    "all": "npm run lint && npm run tests"
+    "all": "npm run lint && npm run test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Storyous/pay-prometheus-exporter.git"
+    "url": "git+https://github.com/Storyous/uptime-prometheus-exporter.git"
   },
   "author": "Storyous",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Storyous/pay-prometheus-exporter/issues"
+    "url": "https://github.com/Storyous/uptime-prometheus-exporter/issues"
   },
-  "homepage": "https://github.com/Storyous/pay-prometheus-exporter#readme",
+  "homepage": "https://github.com/Storyous/uptime-prometheus-exporter#readme",
   "devDependencies": {
     "eslint": "^2.7.0",
     "eslint-config-airbnb": "^6.2.0",
@@ -31,18 +31,9 @@
   },
   "dependencies": {
     "co": "^4.6.0",
-    "gzip": "^0.1.0",
-    "gzippo": "^0.2.0",
-    "ioredis": "^1.15.1",
     "koa": "^1.2.0",
     "koa-hbs": "^0.8.0",
     "koa-router": "^5.4.0",
-    "moment": "^2.10.6",
-    "node-gyp": "^2.0.2",
-    "node-schedule": "^0.2.9",
-    "node.extend": "^1.1.5",
-    "redis": "^1.0.0",
-    "winston": "^2.2.0",
-    "winston-mongodb": "^1.4.0"
-  }
+    "node.extend": "^1.1.5"
+      }
 }

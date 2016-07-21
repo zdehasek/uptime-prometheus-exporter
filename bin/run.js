@@ -1,36 +1,51 @@
 #!/usr/bin/env node
 'use strict';
 
-/**
- * taken from http://expressjs.com/starter/generator.html
- */
-
-const app = require('../app');
-const http = require('http');
 const config = require('../app/config');
+const http = require('http');
+const https = require('https');
+const url = require ('url');
+const protocols = [ {prefix: "http://", request: http},{prefix: "https://", request: https} ];
 
-const server = http.createServer(app.callback());
 
-// start server
-server.listen(config.port);
+const koa = require('koa');
+const app = koa();
 
-// or when there is an error
-server.on('error', (error) => {
-    if (error.syscall !== 'listen') {
-        throw error;
+app.use(function *(){
+  const resultPromises = []
+  for(let address of config.URLs) {
+    for (let protocol of protocols ) {
+      let promise = new Promise((resolve, reject)=> {
+        let URL = protocol.prefix + address.host;
+        const parsedURL = url.parse(URL);
+        const request = protocol.request.get({
+          host: parsedURL.host,
+          method: 'GET',
+          path: parsedURL.path,
+          rejectUnauthorized: false,
+          requestCert: true,
+          agent: false
+    }, function (response) {
+          // TODO: check redirected satusCode as well.
+
+          if ([200,301,302].indexOf(response.statusCode) >= 0 ) {
+            resolve("urlcheck{url=\"" + URL + "\"} 1");
+          } else {
+            //console.log(response.statusCode);
+            resolve("urlcheck{url=\"" + URL + "\"} 0");
+          }
+        });
+        request.on("error",function (error) {
+          console.log("hit");
+          console.log(error.message);
+          resolve("urlcheck{url=\"" + URL + "\"} 0");
+        })
+      });
+        resultPromises.push(promise);
     }
-
-    // handle specific listen errors with friendly messages
-    switch (error.code) {
-        case 'EACCES':
-            console.error(`${config.port} requires elevated privileges`);
-            process.exit(1);
-            break;
-        case 'EADDRINUSE':
-            console.error(`${config.port} is already in use`);
-            process.exit(1);
-            break;
-        default:
-            throw error;
-    }
+  }
+  const result = yield resultPromises;
+  this.body = result.join("\n")+"\n"
 });
+
+app.listen(8080);
