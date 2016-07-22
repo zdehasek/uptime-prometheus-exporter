@@ -2,11 +2,10 @@
 'use strict';
 
 const config = require('../app/config');
-const http = require('http');
-const https = require('https');
+const http = require('follow-redirects').http;
+const https = require('follow-redirects').https;
 const url = require ('url');
 const protocols = [ {prefix: "http://", request: http},{prefix: "https://", request: https} ];
-
 
 const koa = require('koa');
 const app = koa();
@@ -26,12 +25,11 @@ app.use(function *(){
           requestCert: true,
           agent: false
     }, function (response) {
-          // TODO: check redirected satusCode as well.
-
-          if ([200,301,302].indexOf(response.statusCode) >= 0 ) {
+          console.log(address.host + " " + response.statusCode);
+          if (response.statusCode == 200 ) {
+          //if ([200,301,302].indexOf(response.statusCode) >= 0 ) {
             resolve("urlcheck{url=\"" + URL + "\"} 1");
           } else {
-            //console.log(response.statusCode);
             resolve("urlcheck{url=\"" + URL + "\"} 0");
           }
         });
