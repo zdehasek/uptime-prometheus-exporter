@@ -2,8 +2,10 @@
 'use strict';
 
 const config = require('../app/config');
-const http = require('follow-redirects').http;
-const https = require('follow-redirects').https;
+const http = require('http');
+//const http = require('follow-redirects').http;
+const https = require('https');
+//const https = require('follow-redirects').https;
 const url = require ('url');
 const protocols = [ {prefix: "http://", request: http},{prefix: "https://", request: https} ];
 
@@ -26,8 +28,8 @@ app.use(function *(){
           agent: false
     }, function (response) {
           console.log(address.host + " " + response.statusCode);
-          if (response.statusCode == 200 ) {
-          //if ([200,301,302].indexOf(response.statusCode) >= 0 ) {
+          //if (response.statusCode == 200 ) {
+          if ([200,301,302].indexOf(response.statusCode) >= 0 ) {
             resolve("urlcheck{url=\"" + URL + "\"} 1");
           } else {
             resolve("urlcheck{url=\"" + URL + "\"} 0");
