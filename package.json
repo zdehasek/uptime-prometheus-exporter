@@ -31,10 +31,10 @@
   },
   "dependencies": {
     "co": "^4.6.0",
-    "follow-redirects": "^0.2.0",
     "koa": "^1.2.0",
     "koa-hbs": "^0.8.0",
     "koa-router": "^5.4.0",
-    "node.extend": "^1.1.5"
+    "node.extend": "^1.1.5",
+    "request": "^2.74.0"
   }
 }
