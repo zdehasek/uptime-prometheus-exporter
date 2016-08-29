@@ -3,8 +3,8 @@
 'use strict';
 
 var config = require('config');
-var port = config.get('port');
 
+var port = config.get('port');
 var targets = config.get('targets');
 
 const koa = require('koa');
@@ -14,11 +14,14 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var targetToPromise = require('../app/targetToPromise');
 
-
-app.use(function*() {
+var formatResults = function*() {
   var resultPromises = targets.map(targetToPromise);
   const result = yield resultPromises;
-  this.body = result.join("\n") + "\n"
+  return result.join("\n") + "\n"
+}
+
+app.use(function*() {
+  this.body = yield formatResults();
 });
 
 app.listen(port);
