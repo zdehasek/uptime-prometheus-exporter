@@ -2,26 +2,37 @@
 
 'use strict';
 
-var config = require('config');
-
-var port = config.get('port');
-var targets = config.get('targets');
-
+const config = require('config');
 const koa = require('koa');
-const app = koa();
+var co = require('co');
+
+
+const targets = config.get('targets');
+
 //Cheap and insecure: TODO: FIX!!!
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-var targetToPromise = require('../app/targetToPromise');
+const targetToPromise = require('../app/targetToPromise');
 
 var formatResults = function*() {
-  var resultPromises = targets.map(targetToPromise);
+  const resultPromises = targets.map(targetToPromise);
   const result = yield resultPromises;
   return result.join("\n") + "\n"
 }
 
-app.use(function*() {
-  this.body = yield formatResults();
-});
+if (config.has('port')) { // if run with port parameter, then run server and return result on each HTTP GET
 
-app.listen(port);
+  const port = config.get('port');
+
+  const app = koa();
+
+  app.use(function*() {
+    this.body = yield formatResults();
+  });
+
+  app.listen(port);
+
+} else {  // if not run with port parameter, then print out and exit, do not run server
+  const resultsFormated = co(formatResults());
+  console.log(resultsFormated)
+}
