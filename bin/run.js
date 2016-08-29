@@ -32,7 +32,8 @@ if (config.has('port')) { // if run with port parameter, then run server and ret
 
   app.listen(port);
 
-} else {  // if not run with port parameter, then print out and exit, do not run server
-  const resultsFormated = co(formatResults());
-  console.log(resultsFormated)
+} else { // if not run with port parameter, then print out and exit, do not run server
+  const resultsFormated = co(formatResults()).then((result) => {
+    console.log(result)
+  });
 }

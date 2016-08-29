@@ -7,35 +7,49 @@ const url = require('url');
 
 var cookies = {};
 
-module.exports =  function targetToPromise(target) {
+module.exports = function targetToPromise(target) {
 	let promise = new Promise((resolve, reject) => {
 
 		let URL = target.url;
-		cookies[URL] = cookies[URL] || request.jar()
-		console.log(URL)
-		request
-			.get({
+		cookies[URL] = cookies[URL] || request.jar();
+
+		request({
+				method: 'GET',
 				url: URL,
 				jar: cookies[URL]
-			})
+			},
 
-		.on('response', (response) => {
-			console.log(target.url + " " + response.statusCode);
-			if (response.statusCode == 200) {
-				resolve("urlcheck{url=\"" + URL + "\"} 1");
-			} else {
-				resolve("urlcheck{url=\"" + URL + "\"} 0");
-			}
-		})
+			function(error, response, body) {
+				if (error) {
+					console.error("hit");
+					console.error(error.message);
+					resolve("urlcheck{url=\"" + URL + "\"} 0");
+				} else {
 
-		.on("error", (error) => {
-			console.log("hit");
-			console.log(error.message);
-			resolve("urlcheck{url=\"" + URL + "\"} 0");
-		})
+					console.log(target.url + " " + response.statusCode);
+					if (response.statusCode == 200) {
 
+
+						if (target.pattern) {
+							var pattern = eval(target.pattern);
+
+							if (pattern.exec(body)) {
+								resolve("urlcheck{url=\"" + URL + "\"} 1");
+							} else {
+								resolve("urlcheck{url=\"" + URL + "\"} 0.5");
+							}
+
+						} else {
+							resolve("urlcheck{url=\"" + URL + "\"} 1");
+						}
+
+
+					} else {
+						resolve("urlcheck{url=\"" + URL + "\"} 0");
+					}
+				}
+			});
 	});
 
 	return promise;
 }
-
