@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-const config = require('../app/config');
+var config = require('config');
+var port = config.get('port');
+
+var targets = config.get('targets');
+
 const request = require('request');
 const url = require ('url');
-const protocols = [ "http://", "https://" ];
 
 const koa = require('koa');
 const app = koa();
@@ -14,11 +17,11 @@ const cookies = {};
 
 app.use(function *(){
   const resultPromises = []
-  for(let address of config.URLs) {
-    for (let protocol of protocols ) {
+  for(let target of targets) {
+
       let promise = new Promise((resolve, reject)=> {
 
-        let URL = protocol + address.host;
+        let URL = target.url;
         cookies[URL] = cookies[URL] || request.jar()
       //  const parsedURL = url.parse(URL);
         console.log(URL)
@@ -26,7 +29,7 @@ app.use(function *(){
           .get({url: URL, jar: cookies[URL]})
 
           .on('response', (response) => {
-            console.log(address.host + " " + response.statusCode);
+            console.log(target.url + " " + response.statusCode);
             if (response.statusCode == 200 ) {
               resolve("urlcheck{url=\"" + URL + "\"} 1");
             } else {
@@ -42,10 +45,10 @@ app.use(function *(){
 
       });
         resultPromises.push(promise);
-    }
+
   }
   const result = yield resultPromises;
   this.body = result.join("\n")+"\n"
 });
 
-app.listen(8080);
+app.listen(port);
