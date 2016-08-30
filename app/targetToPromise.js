@@ -1,7 +1,6 @@
 'use strict';
 
 const request = require('request');
-const url = require('url');
 
 // cache for cookies and patters if run as server
 var cookies = {};
