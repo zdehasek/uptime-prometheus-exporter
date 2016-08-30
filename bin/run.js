@@ -7,7 +7,10 @@ const koa = require('koa');
 var co = require('co');
 
 
-const targets = config.get('targets');
+var targets = config.get('targets');
+const sanitizeProtocols = require('../app/sanitizeProtocols');
+var sanitizedTargets = sanitizeProtocols(targets);
+
 
 //Cheap and insecure: TODO: FIX!!!
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -15,7 +18,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const targetToPromise = require('../app/targetToPromise');
 
 var formatResults = function*() {
-  const resultPromises = targets.map(targetToPromise);
+  const resultPromises = sanitizedTargets.map(targetToPromise);
   const result = yield resultPromises;
   return result.join("\n") + "\n"
 }
