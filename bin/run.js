@@ -20,23 +20,37 @@ const targetToPromise = require('../app/targetToPromise');
 var formatResults = function*() {
   const resultPromises = sanitizedTargets.map(targetToPromise);
   const result = yield resultPromises;
-  return result.join("\n") + "\n"
+  return result.join("\n") + "\n";
 }
+
+var cachedResults = "";
+
 
 if (config.has('port')) { // if run with port parameter, then run server and return result on each HTTP GET
 
   const port = config.get('port');
-
   const app = koa();
 
+  if (config.has('interval')) {
+    setInterval(function() {
+      co(formatResults()).then((results) => {
+        cachedResults = results;
+      });
+    }, config.get('interval'));
+  }
+
   app.use(function*() {
-    this.body = yield formatResults();
+    if (cachedResults === "") {
+      this.body = (cachedResults = yield formatResults());
+    } else {
+      this.body = cachedResults;
+    }
   });
 
   app.listen(port);
 
 } else { // if not run with port parameter, then print out and exit, do not run server
-  const resultsFormated = co(formatResults()).then((result) => {
-    console.log(result)
+  co(formatResults()).then((results) => {
+    console.log(results);
   });
 }

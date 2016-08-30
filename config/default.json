@@ -1,5 +1,6 @@
 {
 	"port": 8080, //comment out to not run server
+	"interval": 60000, 
 	"targets": [{
 		"url": "http://google.com",
 		"pattern": "/Google/i"
