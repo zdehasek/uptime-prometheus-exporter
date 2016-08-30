@@ -26,7 +26,10 @@
     "eslint-plugin-react": "^4.2.3"
   },
   "dependencies": {
+    "co": "^4.6.0",
+    "config": "^1.21.0",
     "koa": "^1.2.0",
-    "request": "^2.74.0"
+    "request": "^2.74.0",
+    "url": "^0.11.0"
   }
 }

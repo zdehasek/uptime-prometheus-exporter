@@ -1,0 +1,10 @@
+{
+	"port": 8080, //comment out to not run server
+	"targets": [{
+		"url": "http://google.com",
+		"pattern": "/Google/i"
+	}, {
+		"url": "https://yahoo.com",
+		"pattern": "/Google/i"
+	}]
+}
