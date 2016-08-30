@@ -21,10 +21,8 @@ var formatResults = function*() {
   const resultPromises = sanitizedTargets.map(targetToPromise);
   const result = yield resultPromises;
   return result.join("\n") + "\n";
-}
 
 var cachedResults = "";
-
 
 if (config.has('port')) { // if run with port parameter, then run server and return result on each HTTP GET
 
