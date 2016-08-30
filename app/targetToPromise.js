@@ -5,7 +5,9 @@
 const request = require('request');
 const url = require('url');
 
+// cache for cookies and patters if run as server
 var cookies = {};
+var patterns = {};
 
 module.exports = function targetToPromise(target) {
 	let promise = new Promise((resolve, reject) => {
@@ -31,9 +33,11 @@ module.exports = function targetToPromise(target) {
 
 
 						if (target.pattern) {
-							var pattern = eval(target.pattern);
 
-							if (pattern.exec(body)) {
+							// cache compiled patterns
+							patterns[URL] = patterns[URL] || eval(target.pattern);
+
+							if (patterns[URL].exec(body)) {
 								resolve("urlcheck{url=\"" + URL + "\"} 1");
 							} else {
 								resolve("urlcheck{url=\"" + URL + "\"} 0.5");
