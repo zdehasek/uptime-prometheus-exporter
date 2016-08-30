@@ -23,18 +23,13 @@
   "devDependencies": {
     "eslint": "^2.7.0",
     "eslint-config-airbnb": "^6.2.0",
-    "eslint-plugin-mocha": "^2.0.0",
-    "eslint-plugin-react": "^4.2.3",
-    "mocha": "^2.4.5",
-    "mockery": "^1.6.2",
-    "sinon": "^1.17.3"
+    "eslint-plugin-react": "^4.2.3"
   },
   "dependencies": {
     "co": "^4.6.0",
+    "config": "^1.21.0",
     "koa": "^1.2.0",
-    "koa-hbs": "^0.8.0",
-    "koa-router": "^5.4.0",
-    "node.extend": "^1.1.5",
-    "request": "^2.74.0"
+    "request": "^2.74.0",
+    "url": "^0.11.0"
   }
 }
