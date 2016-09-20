@@ -1,7 +1,7 @@
 {
   "name": "uptime-prometheus-exporter",
   "version": "1.0.0",
-  "description": "Storyous Prometheus exporter of aggregated data from profilers in redis",
+  "description": "Storyous Prometheus exporter of aggregated data from profilers in redis.",
   "main": "bin/run.js",
   "scripts": {
     "start": "node ./bin/run.js ",
